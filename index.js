@@ -14,6 +14,13 @@ app.get('/', (req, res) => {
     res.send(author)
 })
 
+app.get('/user/:name', (req, res) => {
+    const name = req.params.name;
+
+    res.send(`Hello ${name}`)
+})
+
+
 app.get('*', (req, res)=> {
     res.send('Not Found')
 })

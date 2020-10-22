@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 
+// Middleware
+app.use(express.json());
+
 const port = 4000;
 
 let notes = [
@@ -57,6 +60,21 @@ app.get('/notes/:noteId', (req, res) => {
 app.get('*', (req, res) => {
     res.status(404).send('404 Not Found')
 })
+
+
+// POST request
+app.post('/note', (req, res)=> {
+    const newNote = req.body;
+    // console.log(newNote)
+    notes = [...notes, newNote];
+    res.send(notes)
+    console.log(notes)
+})
+
+
+
+
+
 
 
 // create server

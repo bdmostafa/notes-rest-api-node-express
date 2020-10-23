@@ -1,10 +1,26 @@
 const express = require('express');
 const app = express();
+const mongoose = require('mongoose');
+
+const port = 4000;
 
 // Middleware
 app.use(express.json());
 
-const port = 4000;
+// Connecting database
+try {
+    mongoose.connect(
+        'mongodb://localhost:27017/notes-app',
+        {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        },
+        () => console.log('database connected successfully'))
+} catch (err) {
+    console.log(err)
+}
+
+
 
 let notes = [
     {

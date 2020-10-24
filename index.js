@@ -85,13 +85,37 @@ app.get('/notes', async (req, res) => {
 })
 
 // GET single note
-app.get('/notes/:noteId', (req, res) => {
-    const noteId = parseInt(req.params.noteId);
+app.get(
+    '/notes/:noteId',
+    check('noteId', 'Note Not Found').isMongoId(),
+    async (req, res) => {
 
-    const note = notes.find(note => note.id === noteId)
-    if (note) return res.send(note)
-    res.status(404).send('Note Not Found')
-})
+        // Getting note from fake data array
+        // const noteId = parseInt(req.params.noteId);
+        // try {
+        //     const note = notes.find(note => note.id === noteId)
+        //     if (note) return res.send(note)
+        //     res.status(404).send('Note Not Found')
+        // } catch (err) {
+        //     res.status(500).send(err)
+        // }
+
+        // Check on validationResult
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(404).send('Note Not Found')
+        }
+
+        // Getting note from server
+        try {
+            const id = req.params.noteId;
+            const note = await Note.findById(id);
+            if (!note) return res.status(404).send('Note Not Found')
+            res.send(note)
+        } catch (err) {
+            res.status(500).send(err)
+        }
+    })
 
 app.get('*', (req, res) => {
     res.status(404).send('404 Not Found')
@@ -99,7 +123,8 @@ app.get('*', (req, res) => {
 
 
 // Add note
-app.post('/note',
+app.post(
+    '/note',
     [
         check('title', 'Title is required').notEmpty(),
         check('description', 'Description is required').notEmpty(),

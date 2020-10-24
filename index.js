@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const { check, validationResult } = require('express-validator');
 
 const port = 4000;
 
@@ -82,25 +83,43 @@ app.get('*', (req, res) => {
 
 
 // Add note
-app.post('/note', async (req, res) => {
-    const newNote = new Note(req.body);
-    console.log(newNote)
-    try {
-        await newNote.save();
-        res.send(newNote)
-    } catch (err) {
-        res.status(400).send(err)
-    }
-    
-    
+app.post('/note',
+    [
+        check('title')
+            .notEmpty()
+            .withMessage('Title is required')
+            .isLength({ min: 3, max: 10 })
+            .withMessage('Title be in 3 to 10 characters'),
+        check('description')
+            .notEmpty()
+            .withMessage('Description is required')
+            // .isLength({ min: 10, max: 100 })
+            // .withMessage('Description be in 10 to 100 characters')
+    ],
+    async (req, res) => {
+        // Firstly check on validation
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(400).send(errors.array());
+        }
+        // If valid, then execute to add a new note
+        try {
+            const newNote = new Note(req.body);
+            await newNote.save();
+            res.send(newNote)
+        } catch (err) {
+            res.status(400).send(err)
+        }
 
-    // try {
-    //     notes = [...notes, newNote];
-    //     res.send(notes)
-    // } catch (err) {
-    //     console.log(err)
-    // } 
-})
+        // This part was for fake data array
+        // try {
+        //     notes = [...notes, newNote];
+        //     res.send(notes)
+        // } catch (err) {
+        //     console.log(err)
+        // } 
+
+    })
 
 
 // Update note

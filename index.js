@@ -17,7 +17,8 @@ try {
         'mongodb://localhost:27017/notes-app',
         {
             useNewUrlParser: true,
-            useUnifiedTopology: true
+            useUnifiedTopology: true,
+            useFindAndModify: false
         },
         () => console.log('database connected successfully'))
 } catch (err) {
@@ -102,7 +103,7 @@ app.get(
 
         // Check on validationResult
         const errors = validationResult(req);
-        if(!errors.isEmpty()){
+        if (!errors.isEmpty()) {
             return res.status(404).send('Note Not Found')
         }
 
@@ -164,42 +165,89 @@ app.post(
 
 
 // Update note
-app.put('/notes/:noteId', (req, res) => {
-    // validation inputData/update operation
-    const noteId = parseInt(req.params.noteId);
-    const noteInput = req.body;
-    const keysInput = Object.keys(noteInput)
-    const allowedForUpdates = ['title', 'description'];
-    const isAllowed = keysInput.every(update => allowedForUpdates.includes(update))
+app.put(
+    '/notes/:noteId',
+    [
+        check('noteId', 'Note Not Found').isMongoId(),
+        check('title', 'Title is required')
+            .optional()
+            .notEmpty(),
+        check('description', 'Description is required')
+            .optional()
+            .notEmpty(),
+    ],
+    async (req, res) => {
+        const id = req.params.noteId;
 
-    if (!isAllowed) {
-        return res.status(400).send('Invalid Update Operation.')
-    }
-    // Check if note exists
-    const note = notes.find(note => note.id === noteId)
-    try {
-        if (note) {
-            // Update here
-            notes = notes.map(note => {
-                if (note.id === noteId) {
-                    return {
-                        ...note,
-                        ...noteInput
-                    };
-                } else {
-                    return note;
-                }
+        // validation update operation and inputData
+        const noteInputValue = req.body;
+        const keysInput = Object.keys(noteInputValue)
+        const allowedForUpdates = ['title', 'description'];
+        const isAllowed = keysInput.every(update => allowedForUpdates.includes(update))
+
+        if (!isAllowed) return res.status(400).send('Invalid Update Operation.')
+
+        // Dealing with errors on express-validator
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) return res.status(404).send(errors.array());
+
+        // After passing all errors and validations, executes try/catch
+        // Update note from server
+        try {
+            const note = await Note.findByIdAndUpdate(id, noteInputValue, {
+                // For adding new note to be updated
+                new: true,
+                // Active validating rules from Schema model when updating
+                // runValidators: ture,
+                // context: 'query'
             });
-            return res.send(notes)
-        } else {
-            // Note not found
-            return res.status(404).send('Note Not Found.')
+            if (!note) return res.status(404).send('Note Not Found');
+            res.send(note);
+        } catch (err) {
+            res.status(500).send('Internal Server Error.')
         }
-    } catch (err) {
-        // Server error
-        res.status(500).send('Internal Server Error.')
-    }
-})
+
+
+        // Update note from fake data array
+        // // validation inputData/update operation
+        // const noteId = parseInt(req.params.noteId);
+        // const noteInput = req.body;
+        // const keysInput = Object.keys(noteInput)
+        // const allowedForUpdates = ['title', 'description'];
+        // const isAllowed = keysInput.every(update => allowedForUpdates.includes(update))
+
+        // if (!isAllowed) {
+        //     return res.status(400).send('Invalid Update Operation.')
+        // }
+        // // Check if note exists
+        // const note = notes.find(note => note.id === noteId)
+        // try {
+        //     if (note) {
+        //         // Update here
+        //         notes = notes.map(note => {
+        //             if (note.id === noteId) {
+        //                 return {
+        //                     ...note,
+        //                     ...noteInput
+        //                 };
+        //             } else {
+        //                 return note;
+        //             }
+        //         });
+        //         return res.send(notes)
+        //     } else {
+        //         // Note not found
+        //         return res.status(404).send('Note Not Found.')
+        //     }
+        // } catch (err) {
+        //     // Server error
+        //     res.status(500).send('Internal Server Error.')
+        // }
+
+
+
+    })
 
 
 // Delete notes

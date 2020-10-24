@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 
 const port = 4000;
 
+//Models
+const Note = require('./models/notes');
+
 // Middleware
 app.use(express.json());
 
@@ -23,21 +26,21 @@ try {
 
 
 let notes = [
-    {
-        id: 1,
-        title: 'Note title 1',
-        description: 'Note description'
-    },
-    {
-        id: 2,
-        title: 'Note title 2',
-        description: 'Note description'
-    },
-    {
-        id: 3,
-        title: 'Note title 3',
-        description: 'Note description'
-    },
+    // {
+    //     id: 1,
+    //     title: 'Note title 1',
+    //     description: 'Note description'
+    // },
+    // {
+    //     id: 2,
+    //     title: 'Note title 2',
+    //     description: 'Note description'
+    // },
+    // {
+    //     id: 3,
+    //     title: 'Note title 3',
+    //     description: 'Note description'
+    // },
 ]
 
 app.get('/', (req, res) => {
@@ -79,12 +82,24 @@ app.get('*', (req, res) => {
 
 
 // Add note
-app.post('/note', (req, res) => {
-    const newNote = req.body;
-    // console.log(newNote)
-    notes = [...notes, newNote];
-    res.send(notes)
-    console.log(notes)
+app.post('/note', async (req, res) => {
+    const newNote = new Note(req.body);
+    console.log(newNote)
+    try {
+        await newNote.save();
+        res.send(newNote)
+    } catch (err) {
+        res.status(400).send(err)
+    }
+    
+    
+
+    // try {
+    //     notes = [...notes, newNote];
+    //     res.send(notes)
+    // } catch (err) {
+    //     console.log(err)
+    // } 
 })
 
 

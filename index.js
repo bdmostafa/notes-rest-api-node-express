@@ -61,11 +61,27 @@ app.get('/', (req, res) => {
 // })
 
 // GET all notes
-app.get('/notes', (req, res) => {
-    if (notes.length === 0) {
-        return res.send('No Notes Found')
+app.get('/notes', async (req, res) => {
+
+    // Getting notes from fake data array
+    // try {
+    //     if (notes.length === 0) {
+    //         return res.send('No Notes Found')
+    //     }
+    //     res.send(notes);
+    // } catch (err) {
+    //     res.status(500).send('Internal Server Error.')
+    // }
+
+    // Getting notes from server
+    try {
+        const notes = await Note.find();
+        res.send(notes);
+    } catch (err) {
+        res.status(500).send(err)
     }
-    res.send(notes);
+
+
 })
 
 // GET single note
@@ -85,21 +101,21 @@ app.get('*', (req, res) => {
 // Add note
 app.post('/note',
     [
-        check('title')
-            .notEmpty()
-            .withMessage('Title is required')
-            .isLength({ min: 3, max: 10 })
-            .withMessage('Title be in 3 to 10 characters'),
-        check('description')
-            .notEmpty()
-            .withMessage('Description is required')
-            // .isLength({ min: 10, max: 100 })
-            // .withMessage('Description be in 10 to 100 characters')
+        check('title', 'Title is required').notEmpty(),
+        check('description', 'Description is required').notEmpty(),
+
+        // For multiple validation rules
+        // check('description')
+        //     .notEmpty()
+        //     .withMessage('Description is required')
+        //     .isLength({ min: 10, max: 100 })
+        //     .withMessage('Description be in 10 to 100 characters')
+
     ],
     async (req, res) => {
         // Firstly check on validation
         const errors = validationResult(req);
-        if(!errors.isEmpty()){
+        if (!errors.isEmpty()) {
             return res.status(400).send(errors.array());
         }
         // If valid, then execute to add a new note

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const usersSchema = new mongoose.Schema({
     firstName: {
@@ -36,11 +37,18 @@ const usersSchema = new mongoose.Schema({
     }
 })
 
+// Generating Auth Token
+usersSchema.methods.generateAuthToken = function () {
+    const token = jwt.sign({ id: this._id }, 'secretKey', { expiresIn: '4h' })
+    return token
+}
+
+
 // Hashing data before saving into database
-usersSchema.pre('save', async function(next) {
+usersSchema.pre('save', async function (next) {
     const hashedPassword = await bcrypt.hash(this.password, 10);
     // When password is hashed already, no need to be hashed
-    if(this.isModified('password')) this.password = hashedPassword;
+    if (this.isModified('password')) this.password = hashedPassword;
     next();
 })
 

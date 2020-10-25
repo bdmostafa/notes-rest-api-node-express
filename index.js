@@ -1,10 +1,12 @@
 const express = require('express');
 const app = express();
+const cookieParser = require('cookie-parser');
 
 const port = 4000;
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser('secretKey'));
 
 // Import DB
 const { connectDB } = require('./db/dbConnection')

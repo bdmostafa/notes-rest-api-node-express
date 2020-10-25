@@ -67,6 +67,19 @@ module.exports.loginController = async (req, res) => {
         const isMatched = await bcrypt.compare(password, user.password);
         if (!isMatched) return res.status(400).send('Unable to login');
 
+        // Generating Auth Token
+        const token = user.generateAuthToken();
+        console.log(token)
+        // Send token as header
+        res.header('x-auth-token', token)
+        // Send token as cookie
+        res.cookie('auth', token, {
+            httpOnly: true,
+            sameSite: true,
+            signed: true,
+            maxAge: 4 * 60 * 60 * 1000
+        })
+
         // Successfully LoggedIn
         res.send('LoggedIn Successfully!')
         

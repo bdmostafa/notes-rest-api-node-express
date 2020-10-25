@@ -64,12 +64,11 @@ module.exports.loginController = async (req, res) => {
         if (!user) return res.status(400).send('Unable to login');
 
         // Check User password
-        const isMatched = bcrypt.compare(password, user.password);
-        console.log(isMatched)
+        const isMatched = await bcrypt.compare(password, user.password);
         if (!isMatched) return res.status(400).send('Unable to login');
 
         // Successfully LoggedIn
-        if (isMatched) res.send('LoggedIn Successfully!')
+        res.send('LoggedIn Successfully!')
         
     } catch (err) {
         res.status(500).send(err)

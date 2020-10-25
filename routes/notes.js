@@ -16,7 +16,7 @@ const {
 
 
 // GET all notes
-router.get('/', auth, getNotesController)
+router.get('/', getNotesController)
 
 // GET single note
 router.get(
@@ -29,6 +29,7 @@ router.get(
 router.post(
     '/',
     [
+        auth,
         check('title', 'Title is required').notEmpty(),
         check('description', 'Description is required').notEmpty(),
 
@@ -48,6 +49,7 @@ router.post(
 router.put(
     '/:noteId',
     [
+        auth,
         check('noteId', 'Note Not Found').isMongoId(),
         check('title', 'Title is required')
             .optional()
@@ -63,7 +65,10 @@ router.put(
 // Delete notes
 router.delete(
     '/:noteId',
-    check('noteId', 'Note Not Found').isMongoId(),
+    [
+        auth,
+        check('noteId', 'Note Not Found').isMongoId()
+    ],
     deleteNoteController
 )
 

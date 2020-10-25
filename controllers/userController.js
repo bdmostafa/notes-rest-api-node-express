@@ -88,3 +88,8 @@ module.exports.loginController = async (req, res) => {
         res.status(500).send(err)
     }
 }
+
+module.exports.logoutController = async (req, res) => {
+    res.clearCookie('auth')
+    res.send('Successfully logout')
+}

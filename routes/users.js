@@ -1,13 +1,14 @@
 const express = require('express');
 const { check } = require('express-validator');
-const { addUserController, getUsersController, getUserController, loginController } = require('../controllers/userController');
+const { addUserController, getUsersController, getUserController, loginController, logoutController } = require('../controllers/userController');
 const { auth } = require('../middleware/auth');
 const router = express.Router();
 
 
-
+// Getting all users
 router.get('/', getUsersController);
 
+// getting single user
 router.get(
     // '/:userId',
     // check('userId', 'User Not Found').isMongoId(),
@@ -16,6 +17,7 @@ router.get(
     getUserController
 )
 
+// Adding new user
 router.post(
     '/',
     [
@@ -38,8 +40,11 @@ router.post(
     addUserController
 )
 
+// Login user
 router.post('/login', loginController)
 
+// Logout user
+router.post('/logout', auth, logoutController)
 
 
 module.exports = router;

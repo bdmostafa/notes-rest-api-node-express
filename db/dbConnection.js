@@ -8,7 +8,8 @@ module.exports.connectDB = async () => {
             {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
-                useFindAndModify: false
+                useFindAndModify: false,
+                useCreateIndex: true
             },
             () => console.log('database connected successfully'))
     } catch (err) {

@@ -14,8 +14,8 @@ module.exports.addUserController = async (req, res) => {
     const user = new User(req.body);
     try {
         // Checking if email already exists or not
-        const foundUser = await User.findOne({email: req.body.email})
-        if(foundUser) return res.status(400).send('User email already registered')
+        const foundUser = await User.findOne({ email: req.body.email })
+        if (foundUser) return res.status(400).send('User email already registered')
 
         // When new email is requested, save to database
         await user.save();
@@ -27,8 +27,28 @@ module.exports.addUserController = async (req, res) => {
 
 }
 
+module.exports.getUserController = async (req, res) => {
+    
+    const id = req.params.userId;
 
+    try {
+        console.log(id)
+         // Password is not allowed to pass to client section (-password)
+        const user = await User.findById(id, '-password');
+        if (!user) return res.status(404).send('User Not Exists')
+        res.send(user)
+    } catch (err) {
+        res.status(500).send(err)
+    }
+}
 
-module.exports.getUsersController = (req, res) => {
-    res.send('All Users')
+module.exports.getUsersController = async (req, res) => {
+    try {
+        // Password is not allowed to pass to client section
+        const users = await User.find({}, '-password');
+        res.send(users)
+    } catch (err) {
+        res.status(500).send(err)
+    }
+
 }

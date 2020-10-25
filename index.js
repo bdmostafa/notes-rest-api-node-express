@@ -13,12 +13,16 @@ const { connectDB } = require('./db/dbConnection')
 connectDB();
 
 // Import Routes
-const notesRoute = require('./routes/notes')
 const indexRoute = require('./routes')
+const notesRoute = require('./routes/notes')
+const usersRoute = require('./routes/users')
+
 
 // Handling Routes
 app.use('/notes', notesRoute)
+app.use('/users', usersRoute)
 app.use('/', indexRoute)
+
 
 // create server
 app.listen(port, () => {

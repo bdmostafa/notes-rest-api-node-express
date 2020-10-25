@@ -1,6 +1,7 @@
 const express = require('express');
 const { check } = require('express-validator');
 const { addUserController, getUsersController, getUserController, loginController } = require('../controllers/userController');
+const { auth } = require('../middleware/auth');
 const router = express.Router();
 
 
@@ -8,8 +9,10 @@ const router = express.Router();
 router.get('/', getUsersController);
 
 router.get(
-    '/:userId',
-    check('userId', 'User Not Found').isMongoId(),
+    // '/:userId',
+    // check('userId', 'User Not Found').isMongoId(),
+    '/me',
+    auth,
     getUserController
 )
 

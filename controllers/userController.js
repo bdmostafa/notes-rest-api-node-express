@@ -30,7 +30,8 @@ module.exports.addUserController = async (req, res) => {
 
 module.exports.getUserController = async (req, res) => {
 
-    const id = req.params.userId;
+    // const id = req.params.userId;
+    const id = req.user._id;
 
     try {
         console.log(id)

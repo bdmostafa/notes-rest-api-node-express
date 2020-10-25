@@ -19,6 +19,7 @@ module.exports.addNoteController = async (req, res) => {
 };
 
 module.exports.getNotesController = async (req, res) => {
+    console.log(req.user)
 
     // Getting notes from server
     try {

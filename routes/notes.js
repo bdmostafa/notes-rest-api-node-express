@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
 
+// Middleware
+const {auth} = require('../middleware/auth')
+
 // Controllers
 const {
     getNoteController,
@@ -13,7 +16,7 @@ const {
 
 
 // GET all notes
-router.get('/', getNotesController)
+router.get('/', auth, getNotesController)
 
 // GET single note
 router.get(

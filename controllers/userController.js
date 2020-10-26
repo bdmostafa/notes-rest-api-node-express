@@ -70,7 +70,7 @@ module.exports.loginController = async (req, res) => {
 
         // Generating Auth Token
         const token = user.generateAuthToken();
-        console.log(token)
+
         // Send token as header
         res.header('x-auth-token', token)
         // Send token as cookie

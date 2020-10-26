@@ -10,7 +10,11 @@ module.exports.addNoteController = async (req, res) => {
 
     // If valid, then execute to add a new note
     try {
-        const newNote = new Note(req.body);
+        const newNote = new Note({
+            // Adding new field as owner
+            ...req.body,
+            owner: req.user._id
+        });
         await newNote.save();
         res.send(newNote)
     } catch (err) {
@@ -39,7 +43,10 @@ module.exports.getNoteController = async (req, res) => {
     // Getting note from server
     try {
         const id = req.params.noteId;
-        const note = await Note.findById(id);
+        const note = await Note.findById(id).populate(
+            'owner',
+            'firstName lastName'
+        );
         if (!note) return res.status(404).send('Note Not Found')
         res.send(note)
     } catch (err) {

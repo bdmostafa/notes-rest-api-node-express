@@ -2,7 +2,8 @@ const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
 
-const port = 4000;
+// Port
+const PORT = process.env.PORT || 4000;
 
 // Config
 require('dotenv').config({
@@ -32,6 +33,6 @@ app.use('/', indexRoute)
 
 
 // create server
-app.listen(port, () => {
-    console.log(`Listening on the ${port}`)
+app.listen(PORT, () => {
+    console.log(`Listening on the ${PORT}`)
 })

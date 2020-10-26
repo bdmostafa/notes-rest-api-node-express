@@ -2,11 +2,12 @@ const express = require('express');
 const { check } = require('express-validator');
 const { addUserController, getUsersController, getUserController, loginController, logoutController } = require('../controllers/userController');
 const { auth } = require('../middleware/auth');
+const { admin } = require('../middleware/admin');
 const router = express.Router();
 
 
 // Getting all users
-router.get('/', getUsersController);
+router.get('/', [auth, admin], getUsersController);
 
 // getting single user
 router.get(

@@ -34,13 +34,17 @@ const usersSchema = new mongoose.Schema({
             },
             message: "Password must not contain 'password'"
         }
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 })
 
 // Generating Auth Token
 usersSchema.methods.generateAuthToken = function () {
-    const token = jwt.sign({ id: this._id }, 'secretKey', { expiresIn: '4h' })
-    return token
+    const token = jwt.sign({ id: this._id, isAdmin: this.isAdmin }, 'secretKey', { expiresIn: '4h' });
+    return token;
 }
 
 

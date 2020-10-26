@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 module.exports.connectDB = async () => {
     try {
         await mongoose.connect(
-            'mongodb://localhost:27017/notes-app',
+            `mongodb+srv://${process.env.DB_USER}:${process.env.DB_USER_PASSWORD}@cluster0.efifc.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
             {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,

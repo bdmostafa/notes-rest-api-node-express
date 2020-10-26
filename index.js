@@ -4,9 +4,14 @@ const cookieParser = require('cookie-parser');
 
 const port = 4000;
 
+// Config
+require('dotenv').config({
+    path: './config/keys.env'
+})
+
 // Middleware
 app.use(express.json());
-app.use(cookieParser('secretKey'));
+app.use(cookieParser(process.env.COOKIES_SECRET));
 
 // Import DB
 const { connectDB } = require('./db/dbConnection')

@@ -3,7 +3,7 @@ const { validationResult } = require("express-validator");
 //Models
 const Note = require("../models/notes");
 
-module.exports.addNoteController = async (req, res) => {
+module.exports.addNoteController = async (req, res, next) => {
   // Firstly check on validation
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).send(errors.array());
@@ -18,11 +18,11 @@ module.exports.addNoteController = async (req, res) => {
     await newNote.save();
     res.send(newNote);
   } catch (err) {
-    res.status(400).send(err);
+    next(err);
   }
 };
 
-module.exports.getNotesController = async (req, res) => {
+module.exports.getNotesController = async (req, res, next) => {
   console.log(req.user);
 
   // Getting notes from server
@@ -30,11 +30,11 @@ module.exports.getNotesController = async (req, res) => {
     const notes = await Note.find();
     res.send(notes);
   } catch (err) {
-    res.status(500).send(err);
+    next(err);
   }
 };
 
-module.exports.getNoteController = async (req, res) => {
+module.exports.getNoteController = async (req, res, next) => {
   // Check on validationResult
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(404).send("Note Not Found");
@@ -49,11 +49,11 @@ module.exports.getNoteController = async (req, res) => {
     if (!note) return res.status(404).send("Note Not Found");
     res.send(note);
   } catch (err) {
-    res.status(500).send(err);
+    next(err);
   }
 };
 
-module.exports.deleteNoteController = async (req, res) => {
+module.exports.deleteNoteController = async (req, res, next) => {
   // Delete from database
   const id = req.params.noteId;
   const errors = validationResult(req);
@@ -68,11 +68,11 @@ module.exports.deleteNoteController = async (req, res) => {
     if (!note) return res.status(404).send("Note Not Found");
     res.send(note);
   } catch (err) {
-    res.status(500).send(err);
+    next(err);
   }
 };
 
-module.exports.updateNoteController = async (req, res) => {
+module.exports.updateNoteController = async (req, res, next) => {
   const id = req.params.noteId;
   const noteInputValue = req.body;
 
@@ -110,7 +110,7 @@ module.exports.updateNoteController = async (req, res) => {
     if (!note) return res.status(404).send("Note Not Found");
     res.send(note);
   } catch (err) {
-    res.status(500).send("Internal Server Error.");
+    next(err);
   }
 
   // Update note from fake data array

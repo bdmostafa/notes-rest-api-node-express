@@ -14,6 +14,9 @@ require('dotenv').config({
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIES_SECRET));
 
+// Import Error middleware
+const {error} = require('./middleware/error')
+
 // Import DB
 const { connectDB } = require('./db/dbConnection')
 
@@ -30,6 +33,7 @@ const usersRoute = require('./routes/users')
 app.use('/notes', notesRoute)
 app.use('/users', usersRoute)
 app.use('/', indexRoute)
+app.use(error)
 
 
 // create server
